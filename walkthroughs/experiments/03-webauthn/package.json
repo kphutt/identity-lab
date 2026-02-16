@@ -1,0 +1,14 @@
+{
+  "name": "03-webauthn",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "description": "Experiment 3: WebAuthn Ceremonies — Registration + Authentication",
+  "scripts": {
+    "start": "node run.js"
+  },
+  "dependencies": {
+    "cbor-x": "^1.6.0",
+    "jose": "^5.0.0"
+  }
+}
