@@ -1,0 +1,13 @@
+{
+  "name": "02-sender-constraint",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "description": "Experiment 2: The Sender-Constraint Story — DPoP + DBSC",
+  "scripts": {
+    "start": "node run.js"
+  },
+  "dependencies": {
+    "jose": "^5.0.0"
+  }
+}
