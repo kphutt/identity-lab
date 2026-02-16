@@ -1,0 +1,13 @@
+{
+  "name": "08-caep",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "description": "Experiment 8: CAEP / Shared Signals Framework",
+  "scripts": {
+    "start": "node run.js"
+  },
+  "dependencies": {
+    "jose": "^5.0.0"
+  }
+}
