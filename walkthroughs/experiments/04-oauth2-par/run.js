@@ -273,6 +273,8 @@ async function main() {
 
   POST https://as.example.com/oauth/token
   Content-Type: application/x-www-form-urlencoded
+  (Shown as annotated JSON for readability — the actual wire format
+  is key=value&key=value)
 
   {
     "grant_type": "authorization_code",
@@ -281,7 +283,9 @@ async function main() {
 
     "code": "${authorizationCode}",
         ↳ Authorization Code. The short-lived, single-use code from
-          the redirect. Must be used within seconds (typically 30-60s).
+          the redirect. The RFC recommends a max lifetime of 10
+          minutes (RFC 6749 §4.1.2), and most implementations use
+          30 seconds to a few minutes.
 
     "redirect_uri": "https://app.example.com/callback",
         ↳ Redirect URI. Must EXACTLY match the one in the
@@ -339,8 +343,10 @@ async function main() {
         ↳ Refresh Token. Opaque string (not a JWT). Used to get
           new access tokens without re-authenticating the user.
           Stored securely by the client, never sent to resource
-          servers. Rotation: each use returns a new refresh token
-          and invalidates the old one.
+          servers. Best practice (required by OAuth 2.1): each use
+          returns a new refresh token and invalidates the old one
+          (rotation). RFC 6749 §6 says the AS "MAY issue a new
+          refresh token" — not all implementations rotate.
   }
 `);
   await pause();
@@ -357,6 +363,8 @@ async function main() {
 
   POST https://as.example.com/oauth/token
   Content-Type: application/x-www-form-urlencoded
+  (Shown as annotated JSON for readability — the actual wire format
+  is key=value&key=value)
 
   {
     "grant_type": "client_credentials",
@@ -449,6 +457,8 @@ async function main() {
         console.log();
         console.log(`  POST https://as.example.com/as/par`);
         console.log(`  Content-Type: application/x-www-form-urlencoded`);
+        console.log(`  (Shown as annotated JSON for readability — the actual wire format`);
+        console.log(`  is key=value&key=value)`);
         console.log();
         console.log(`  {`);
         console.log(`    "response_type": "code",`);

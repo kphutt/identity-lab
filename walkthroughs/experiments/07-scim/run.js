@@ -291,7 +291,8 @@ async function main() {
 
   ┌───────────┬────────────────────────────────────────────────────┐
   │  replace  │  Overwrite a field. "active": true → false.        │
-  │           │  Field must exist. Like a targeted assignment.     │
+  │           │  If field doesn't exist, behaves like "add"       │
+  │           │  (RFC 7644 §3.5.2.3).                             │
   ├───────────┼────────────────────────────────────────────────────┤
   │  add      │  Create a field or append to an array. Safe for   │
   │           │  both new and existing fields. Array values are    │

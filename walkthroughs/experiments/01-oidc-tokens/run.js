@@ -70,8 +70,9 @@ async function main() {
   STEP 1: Generating the Signing Key
 
   Generating an EC P-256 (Elliptic Curve, NIST P-256) keypair...
-  This is the standard signing algorithm for OIDC, called "ES256"
-  in JWT headers (ECDSA with P-256 and SHA-256).
+  This is the recommended signing algorithm for modern OIDC — ES256
+  (ECDSA with P-256 and SHA-256). RS256 is still common in older
+  deployments (Azure AD, many legacy IdPs default to it).
 
   Private key (JWK — JSON Web Key, a standard JSON format for
   representing cryptographic keys):
@@ -125,7 +126,11 @@ async function main() {
   (Relying Parties — services that accept tokens) can fetch them
   for signature verification.
 
-  Published at: https://idp.example.com/.well-known/jwks.json
+  Published at: https://idp.example.com/oauth/jwks
+      ↳ The RP discovers this URL from the IdP's OIDC Discovery
+        document at /.well-known/openid-configuration (covered
+        in Experiment 6). The jwks_uri is NOT a well-known path
+        itself — it can be any URL the IdP chooses.
 
   {
     "keys": [
@@ -182,7 +187,7 @@ async function main() {
   const payload = {
     iss: 'https://idp.example.com',
     sub: 'user-8492',
-    aud: 'https://api.serviceA.com',
+    aud: 'client-app-xyz',
     azp: 'client-app-xyz',
     nonce,
     at_hash: atHash,
@@ -213,10 +218,12 @@ async function main() {
           IdP. Not an email — emails get reassigned. Federated account
           linking uses iss+sub, never email.
 
-    "aud": "https://api.serviceA.com",
-        ↳ Audience. WHO THIS TOKEN IS FOR. The intended recipient.
-          Service A checks: "is aud ME?" If not, REJECT.
-          This prevents the confused deputy attack.
+    "aud": "client-app-xyz",
+        ↳ Audience. WHO THIS TOKEN IS FOR. In an ID token, aud MUST
+          be the client_id of the RP that requested authentication
+          (OIDC Core §2). The RP checks: "is aud MY client_id?"
+          If not, REJECT. (In access tokens per RFC 9068, aud can
+          be a resource server URL — don't confuse the two.)
 
     "azp": "client-app-xyz",
         ↳ Authorized Party. WHO REQUESTED this token. When aud has
@@ -335,7 +342,7 @@ ${jwtLines.map(l => '  ' + l).join('\n')}
   // Verify the token for real
   const { payload: verifiedPayload } = await jose.jwtVerify(jwt, publicKey, {
     issuer: 'https://idp.example.com',
-    audience: 'https://api.serviceA.com',
+    audience: 'client-app-xyz',
   });
 
   console.log('━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━');
@@ -361,8 +368,8 @@ ${jwtLines.map(l => '  ' + l).join('\n')}
      "${verifiedPayload.iss}" === "https://idp.example.com"
      ✓ Issuer trusted
 
-  5. Check aud matches THIS service
-     "${verifiedPayload.aud}" === "https://api.serviceA.com"
+  5. Check aud matches THIS client's client_id
+     "${verifiedPayload.aud}" === "client-app-xyz"
      ✓ Audience matches
 
   6. Check exp > current time
@@ -401,8 +408,8 @@ ${jwtLines.map(l => '  ' + l).join('\n')}
     {
       name: 'Skip audience check',
       fn: async () => {
-        console.log(`  Token aud:  "https://api.serviceA.com"`);
-        console.log(`  You are:    "https://api.serviceB.com"`);
+        console.log(`  Token aud:  "client-app-xyz" (Service A's client_id)`);
+        console.log(`  You are:    "client-app-serviceB" (Service B's client_id)`);
         console.log();
         console.log(`  Signature ✓  Expiry ✓  Issuer ✓  Audience... not checked.`);
         console.log();
@@ -467,7 +474,7 @@ ${jwtLines.map(l => '  ' + l).join('\n')}
         try {
           await jose.jwtVerify(jwt, wrongPublicKey, {
             issuer: 'https://idp.example.com',
-            audience: 'https://api.serviceA.com',
+            audience: 'client-app-xyz',
           });
           console.log(`  Result: ACCEPTED (unexpected!)`);
         } catch (e) {
@@ -496,7 +503,7 @@ ${jwtLines.map(l => '  ' + l).join('\n')}
         try {
           await jose.jwtVerify(jwt, publicKey, {
             issuer: 'https://auth.mycompany.com',
-            audience: 'https://api.serviceA.com',
+            audience: 'client-app-xyz',
           });
           console.log(`  Result: ACCEPTED (unexpected!)`);
         } catch {
@@ -518,7 +525,7 @@ ${jwtLines.map(l => '  ' + l).join('\n')}
         // Full validation chain
         const { payload: verified } = await jose.jwtVerify(jwt, publicKey, {
           issuer: 'https://idp.example.com',
-          audience: 'https://api.serviceA.com',
+          audience: 'client-app-xyz',
         });
 
         console.log(`  Full validation chain — all checks passing:`);
@@ -527,14 +534,14 @@ ${jwtLines.map(l => '  ' + l).join('\n')}
         console.log(`  2. Fetch JWKS, find kid       ✓  Key found`);
         console.log(`  3. Verify signature            ✓  ECDSA-SHA256 valid`);
         console.log(`  4. Check iss                   ✓  "https://idp.example.com"`);
-        console.log(`  5. Check aud                   ✓  "https://api.serviceA.com"`);
+        console.log(`  5. Check aud                   ✓  "client-app-xyz"`);
         console.log(`  6. Check exp                   ✓  ${verified.exp - now}s remaining`);
         console.log(`  7. Check iat                   ✓  Not in the future`);
         console.log(`  8. Check nonce                 ✓  Matches auth request`);
         console.log(`  9. Verify at_hash              ✓  Binds to access token`);
         console.log();
         console.log(`  Token is valid. User "user-8492" authenticated at`);
-        console.log(`  "https://idp.example.com" for "https://api.serviceA.com".`);
+        console.log(`  "https://idp.example.com" for client "client-app-xyz".`);
         console.log();
 
         await pause();

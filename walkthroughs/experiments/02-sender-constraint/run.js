@@ -575,7 +575,7 @@ async function main() {
       iat: now,
     }))
   )
-    .setProtectedHeader({ alg: 'ES256', typ: 'dbsc+jwt' })
+    .setProtectedHeader({ alg: 'ES256', typ: 'dbsc+jwt' }) // mock type for illustration
     .sign(tpmPrivateKey);
 
   console.log(`  ── Session Refresh (proving the device) ──
@@ -594,7 +594,11 @@ async function main() {
 `);
   console.log(`  Step 7: Server verifies signature against stored public key`);
   console.log(`    Verify signature with stored key... ✓`);
-  console.log(`    Session refreshed. New cookie issued.
+  console.log(`    Session refreshed. New cookie issued.`);
+  console.log();
+  console.log(`  Note: the typ "dbsc+jwt" above is a mock type for illustration.`);
+  console.log(`  The actual DBSC spec defines a different challenge-response`);
+  console.log(`  mechanism — the concept (TPM-bound session proof) is accurate.
 `);
 
   await pause();

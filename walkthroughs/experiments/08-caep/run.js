@@ -157,15 +157,24 @@ ${'═'.repeat(66)}
   Step through with ENTER. Use --no-pause for full dump.
 ${'═'.repeat(66)}
 
-  CAEP solves the JWT revocation gap. Self-contained tokens can't be
-  revoked until they expire — CAEP signals tell the resource server
-  to drop the session NOW.
+  Two specs, one goal: close the JWT revocation gap.
+
+  SSF (Shared Signals Framework) — the delivery plumbing. Defines
+  transmitters, receivers, streams, push/poll delivery, and stream
+  configuration. SSF moves Security Event Tokens (SETs) between services.
+
+  CAEP (Continuous Access Evaluation Protocol) — an event profile
+  that rides on SSF. Defines the specific event types: session-revoked,
+  credential-change, token-claims-change, etc.
+
+  Think of it like HTTP vs REST: SSF is the transport, CAEP is the
+  contract that says what the events mean.
 
   Where Experiment 7 showed decoded SET payloads and said "you'll
   construct and sign these as real JWTs" — this experiment delivers.
   Real jose-signed SETs (typ: secevent+jwt), real verification against
-  transmitter JWKS, and three distinct event types showing how lifecycle
-  events trigger enforcement signals.
+  transmitter JWKS, and three distinct CAEP event types showing how
+  lifecycle events trigger enforcement signals.
 
   Builds on: Experiment 1 (self-contained JWTs, exp/TTL)
              Experiment 2 (DPoP/DBSC session binding)
@@ -183,7 +192,7 @@ ${'═'.repeat(66)}
   console.log(`
   STEP 1: SET Structure — Security Event Token (RFC 8417)
 
-  Key terms:
+  Key terms (SSF — Shared Signals Framework):
 
   Transmitter — the service that detects a security event and sends
     it. Example: IdP detects a user was deprovisioned via SCIM DELETE.
@@ -191,9 +200,9 @@ ${'═'.repeat(66)}
   Receiver — the service that acts on the event. Example: resource
     server revokes the user's sessions immediately.
 
-  Stream — a configured delivery channel between a transmitter and
-    receiver. The receiver subscribes to event types it cares about
-    (session-revoked, credential-change, etc.).
+  Stream — a configured SSF delivery channel between a transmitter
+    and receiver. The receiver subscribes to CAEP event types it
+    cares about (session-revoked, credential-change, etc.).
 
   A SET (Security Event Token) is a JWT that carries a security event.
   Not an access grant — an event notification. It tells the receiver
@@ -272,11 +281,11 @@ ${'═'.repeat(66)}
      something happened (session revoked, credential compromised, etc.).
      Access tokens authorize API calls; SETs trigger security actions.
 
-  🎯 INTERVIEW ALERT: "What are SSF transmitters and receivers?"
-     Transmitter detects a security event and pushes a SET. Receiver
-     acts on it (e.g., kills session). They're connected by a stream —
-     a configured delivery channel where the receiver subscribes to the
-     event types it cares about.
+  🎯 INTERVIEW ALERT: "What's the difference between SSF and CAEP?"
+     SSF (Shared Signals Framework) is the delivery plumbing —
+     transmitters, receivers, streams, push/poll delivery. CAEP is
+     an event profile that defines what the events mean (session-revoked,
+     credential-change, etc.). SSF moves the SETs; CAEP defines them.
 `);
   await pause();
 
@@ -284,11 +293,14 @@ ${'═'.repeat(66)}
 
   console.log('━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━');
   console.log(`
-  STEP 2: HTTP Push Delivery + Receiver Verification
+  STEP 2: SSF Push Delivery + Receiver Verification
 
-  The transmitter pushes the SET to the receiver's endpoint:
+  The transmitter pushes the SET to the receiver's endpoint via SSF:
 
-  POST https://api.example.com/.well-known/sse/events
+  POST https://api.example.com/signals/events
+      ↳ This is a receiver-configured endpoint, NOT a standardized
+        well-known path. The transmitter discovers it via the SSF
+        configuration at /.well-known/ssf-configuration.
   Content-Type: application/secevent+jwt
       ↳ Not application/json. The body IS the JWT string — a compact
         serialized SET, not a JSON wrapper. The Content-Type tells the
@@ -351,6 +363,12 @@ ${'═'.repeat(66)}
 
   console.log(`  All 6 steps completed. The session is dead within milliseconds`);
   console.log(`  of the SCIM DELETE that triggered the event.`);
+  console.log();
+  console.log(`  Note: SSF also supports poll-based delivery, where the receiver`);
+  console.log(`  periodically fetches events from the transmitter (GET /events).`);
+  console.log(`  Push = real-time but requires receiver uptime and a public endpoint.`);
+  console.log(`  Poll = simpler infrastructure but adds latency (events wait until`);
+  console.log(`  next poll interval). Most enterprise deployments use push for CAEP.`);
 
   await pause();
 
@@ -796,9 +814,11 @@ ${'═'.repeat(66)}
   Cover the answers below. Try to answer each from memory.
 ${'═'.repeat(66)}
 
-  Q: What is CAEP?
-  A: Continuous Access Evaluation Protocol. Pushes real-time security
-     events to close the JWT revocation gap (minutes to milliseconds).
+  Q: What is CAEP and how does it relate to SSF?
+  A: SSF (Shared Signals Framework) is the delivery plumbing
+     (transmitters, receivers, streams). CAEP is the event profile
+     (session-revoked, credential-change, etc.) that rides on SSF.
+     Together they close the JWT revocation gap (minutes → ms).
 
   Q: What is a SET?
   A: Security Event Token (RFC 8417). A JWT with typ secevent+jwt
