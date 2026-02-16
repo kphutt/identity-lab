@@ -1,0 +1,13 @@
+{
+  "name": "01-oidc-tokens",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "description": "Experiment 1: OIDC Token Anatomy + Confused Deputy",
+  "scripts": {
+    "start": "node run.js"
+  },
+  "dependencies": {
+    "jose": "^5.0.0"
+  }
+}
