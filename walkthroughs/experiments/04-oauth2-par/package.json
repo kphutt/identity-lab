@@ -1,0 +1,13 @@
+{
+  "name": "04-oauth2-par",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "description": "Experiment 4: OAuth2 Grants + PAR (FAPI 2.0)",
+  "scripts": {
+    "start": "node run.js"
+  },
+  "dependencies": {
+    "jose": "^5.0.0"
+  }
+}
