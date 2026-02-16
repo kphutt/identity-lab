@@ -1,5 +1,18 @@
 import { createInterface } from 'node:readline';
 
+export async function ensureDeps(importMetaUrl) {
+  const { existsSync } = await import('node:fs');
+  const { dirname, join } = await import('node:path');
+  const { fileURLToPath } = await import('node:url');
+  const { execSync } = await import('node:child_process');
+  const dir = dirname(fileURLToPath(importMetaUrl));
+  if (!existsSync(join(dir, 'node_modules'))) {
+    console.log('\n  Dependencies not installed. Running npm install...\n');
+    execSync('npm install --no-audit --no-fund', { cwd: dir, stdio: 'inherit' });
+    console.log();
+  }
+}
+
 export function createCLI({ noPause = false } = {}) {
   const rl = createInterface({ input: process.stdin, output: process.stdout });
 

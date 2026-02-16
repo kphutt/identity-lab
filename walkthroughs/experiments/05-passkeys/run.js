@@ -5,8 +5,9 @@
 // Run: node run.js (interactive) or node run.js --no-pause (full dump)
 
 import { createHash, randomBytes, generateKeyPairSync, sign, verify } from 'node:crypto';
-import { encode as cborEncode } from 'cbor-x';
-import { createCLI } from '../../shared/cli.js';
+import { createCLI, ensureDeps } from '../../shared/cli.js';
+
+let cborEncode;
 
 const NO_PAUSE = process.argv.includes('--no-pause');
 const { pause, explore, close } = createCLI({ noPause: NO_PAUSE });
@@ -176,6 +177,10 @@ function buildSelfSignedCert(publicKey, privateKey, subject) {
 // ── Main ────────────────────────────────────────────────────────
 
 async function main() {
+  await ensureDeps(import.meta.url);
+  const cborx = await import('cbor-x');
+  cborEncode = cborx.encode;
+
   // ── Key Generation ──────────────────────────────────────────
 
   // 1. Credential keypair — synced passkey's per-credential key

@@ -5,7 +5,7 @@
 // Run: node run.js (interactive) or node run.js --no-pause (full dump)
 
 import { randomBytes } from 'node:crypto';
-import { createCLI } from '../../shared/cli.js';
+import { createCLI, ensureDeps } from '../../shared/cli.js';
 
 const NO_PAUSE = process.argv.includes('--no-pause');
 const { pause, explore, close } = createCLI({ noPause: NO_PAUSE });
@@ -13,6 +13,8 @@ const { pause, explore, close } = createCLI({ noPause: NO_PAUSE });
 // ── Main ────────────────────────────────────────────────────────
 
 async function main() {
+  await ensureDeps(import.meta.url);
+
   // ── Pre-built Artifacts ─────────────────────────────────────
   const userId = 'user-' + randomBytes(4).toString('hex');
   const sessionId = 'sess-' + randomBytes(4).toString('hex');

@@ -5,15 +5,7 @@
 // Run: node run.js (interactive) or node run.js --no-pause (full dump)
 
 import { randomBytes } from 'node:crypto';
-import {
-  generateKeyPair,
-  exportJWK,
-  SignJWT,
-  jwtVerify,
-  createLocalJWKSet,
-  decodeProtectedHeader,
-} from 'jose';
-import { createCLI } from '../../shared/cli.js';
+import { createCLI, ensureDeps } from '../../shared/cli.js';
 
 const NO_PAUSE = process.argv.includes('--no-pause');
 const { pause, explore, close } = createCLI({ noPause: NO_PAUSE });
@@ -21,6 +13,16 @@ const { pause, explore, close } = createCLI({ noPause: NO_PAUSE });
 // ── Main ────────────────────────────────────────────────────────
 
 async function main() {
+  await ensureDeps(import.meta.url);
+  const {
+    generateKeyPair,
+    exportJWK,
+    SignJWT,
+    jwtVerify,
+    createLocalJWKSet,
+    decodeProtectedHeader,
+  } = await import('jose');
+
   // ── Pre-built Artifacts ─────────────────────────────────────
 
   // Transmitter keypair for signing SETs

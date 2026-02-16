@@ -4,9 +4,8 @@
 // Layer: Identity/Grant
 // Run: node run.js (interactive) or node run.js --no-pause (full dump)
 
-import * as jose from 'jose';
 import { createHash, randomBytes } from 'node:crypto';
-import { createCLI } from '../../shared/cli.js';
+import { createCLI, ensureDeps } from '../../shared/cli.js';
 
 const NO_PAUSE = process.argv.includes('--no-pause');
 const { pause, explore, close } = createCLI({ noPause: NO_PAUSE });
@@ -14,6 +13,9 @@ const { pause, explore, close } = createCLI({ noPause: NO_PAUSE });
 // ── Main ────────────────────────────────────────────────────────
 
 async function main() {
+  await ensureDeps(import.meta.url);
+  const jose = await import('jose');
+
   // ── Key Generation ──────────────────────────────────────────
   // AS signing keypair — signs access tokens (at+jwt) and ID tokens
   const { publicKey: asPublicKey, privateKey: asPrivateKey } =
