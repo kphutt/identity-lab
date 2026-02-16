@@ -54,7 +54,7 @@ Each experiment simulates both sides of a protocol, prints narrated output one s
 | 6 | OIDC Discovery + JWKS + Key Rotation | Identity/Grant | JWKS endpoints, key selection, rotation timing, compromise response |
 | 7 | SCIM Provisioning + Deprovisioning | Lifecycle | SCIM PATCH format, PUT vs PATCH, deprovisioning cascade |
 | 8 | CAEP / Shared Signals | Enforcement | Security Event Tokens, revocation timing gap, signal-based lifetimes |
-| 9 | Workload Identity Federation *(optional)* | Cross-cutting | GCP WIF, SPIFFE, Secret Zero anti-pattern |
+| 9 | Workload Identity Federation | Cross-cutting | GCP WIF, SPIFFE, Secret Zero anti-pattern |
 
 **Recommended learning path:** Experiments 1-4 cover 80% of the core identity stack.
 

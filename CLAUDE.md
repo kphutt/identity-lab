@@ -6,7 +6,7 @@ A collection of hands-on projects for learning the modern identity protocol stac
 
 | Project | Description | Status |
 |---------|-------------|--------|
-| `walkthroughs/` | Interactive CLI protocol simulations | In Progress |
+| `walkthroughs/` | Interactive CLI protocol simulations | Complete |
 
 More projects are planned — real implementation examples (working WebAuthn RP, OAuth2 authorization server, etc.) will sit as peer directories.
 

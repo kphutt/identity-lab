@@ -6,7 +6,7 @@ Learn the modern identity stack by building it.
 
 | Project | Description | Status |
 |---------|-------------|--------|
-| [walkthroughs/](walkthroughs/) | Interactive CLI protocol simulations — step through each protocol as the RP making security decisions | In Progress |
+| [walkthroughs/](walkthroughs/) | Interactive CLI protocol simulations — step through each protocol as the RP making security decisions | Complete |
 
 ## The Stack
 
@@ -21,7 +21,7 @@ The modern identity stack has five layers. Every project in this repo teaches on
 ## Quick Start
 
 ```bash
-git clone https://github.com/YOUR_USERNAME/identity-lab.git
+git clone https://github.com/kphutt/identity-lab.git
 cd identity-lab/walkthroughs/experiments/01-oidc-tokens
 npm install
 node run.js
