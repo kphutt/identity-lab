@@ -1,0 +1,13 @@
+{
+  "name": "05-passkeys",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "description": "Experiment 5: Passkeys — Sync vs Device-Bound + Attestation",
+  "scripts": {
+    "start": "node run.js"
+  },
+  "dependencies": {
+    "cbor-x": "^1.6.0"
+  }
+}
