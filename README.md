@@ -1,22 +1,63 @@
 # identity-lab
 
-Learn the modern identity stack by building it.
+[![Node.js 18+](https://img.shields.io/badge/node-18+-green.svg)](https://nodejs.org)
+[![License: MIT](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
 
-## Projects
+Learn the modern identity stack by building it. Nine interactive CLI simulations — step through each protocol as the relying party, making security decisions and triggering failure modes.
 
-| Project | Description | Status |
-|---------|-------------|--------|
-| [walkthroughs/](walkthroughs/) | Interactive CLI protocol simulations — step through each protocol as the RP making security decisions | Complete |
+## The Problem
+
+Identity specs are fragmented across dozens of RFCs. Tutorials teach the happy path — they don't show what breaks when you skip audience validation, accept an unsigned token, or cache a revoked key. Reading specs tells you what to implement; simulation lets you trigger the failure modes and see why each check exists.
 
 ## The Stack
 
-The modern identity stack has five layers. Every project in this repo teaches one or more:
+The modern identity stack has five layers. Each layer enforces a distinct security property, and each walkthrough demonstrates one or more:
 
-1. **Presence** — WebAuthn, passkeys, FIDO2 attestation
-2. **Identity/Grant** — OIDC, OAuth2, FAPI 2.0, JWKS key management
-3. **Binding** — DPoP, DBSC, sender-constrained tokens
-4. **Lifecycle** — SCIM provisioning and deprovisioning
-5. **Enforcement** — CAEP, Shared Signals, real-time revocation
+```
+┌─────────────────────────────────────────────┐
+│  5. Enforcement — CAEP, Shared Signals      │  Real-time revocation
+├─────────────────────────────────────────────┤
+│  4. Lifecycle — SCIM provisioning           │  Timely deprovisioning
+├─────────────────────────────────────────────┤
+│  3. Binding — DPoP, sender constraints      │  Replay prevention
+├─────────────────────────────────────────────┤
+│  2. Grant — OIDC, OAuth2, FAPI 2.0, JWKS   │  Scoped authority
+├─────────────────────────────────────────────┤
+│  1. Presence — WebAuthn, passkeys, FIDO2    │  Phishing resistance
+└─────────────────────────────────────────────┘
+```
+
+## Protocol Invariants
+
+Each invariant is demonstrated by a specific walkthrough that lets you trigger the violation and observe the consequence.
+
+| Invariant | Demonstrated by | Mechanism |
+|-----------|----------------|-----------|
+| Authority must not exceed granted scope | [04-oauth2-par](walkthroughs/experiments/04-oauth2-par/) | PAR prevents scope tampering; audience validation prevents confused deputy |
+| Binding must constrain replay | [02-sender-constraint](walkthroughs/experiments/02-sender-constraint/) | DPoP proof binds token to method, URL, and key |
+| Presence must be cryptographically verified | [03-webauthn](walkthroughs/experiments/03-webauthn/) | Origin binding in clientDataJSON prevents phishing |
+| Key rotation must maintain integrity | [06-jwks-rotation](walkthroughs/experiments/06-jwks-rotation/) | Overlapping keys during rotation; kid-based selection |
+| Lifecycle events must cascade | [07-scim](walkthroughs/experiments/07-scim/) | DELETE triggers disable → revoke → SET event → downstream kill |
+| Revocation must happen in real time | [08-caep](walkthroughs/experiments/08-caep/) | SETs close the JWT revocation gap from minutes to milliseconds |
+| Workloads must authenticate without static secrets | [09-workload-identity](walkthroughs/experiments/09-workload-identity/) | Platform-attested OIDC tokens with auto-rotation |
+
+## Walkthroughs
+
+| # | Experiment | Layer |
+|---|-----------|-------|
+| 1 | [OIDC Tokens](walkthroughs/experiments/01-oidc-tokens/) — JWT verification, audience validation, confused deputy | Grant |
+| 2 | [Sender Constraint](walkthroughs/experiments/02-sender-constraint/) — DPoP, DBSC, bearer vs bound tokens | Binding |
+| 3 | [WebAuthn](walkthroughs/experiments/03-webauthn/) — Registration and authentication ceremonies | Presence |
+| 4 | [OAuth2 + PAR](walkthroughs/experiments/04-oauth2-par/) — Authorization code, PKCE, pushed authorization | Grant |
+| 5 | [Passkeys](walkthroughs/experiments/05-passkeys/) — Discoverable credentials, backup flags, synced vs device-bound | Presence |
+| 6 | [JWKS Rotation](walkthroughs/experiments/06-jwks-rotation/) — Key lifecycle, cache semantics, kid selection | Grant |
+| 7 | [SCIM](walkthroughs/experiments/07-scim/) — User provisioning, deprovisioning, DELETE cascade | Lifecycle |
+| 8 | [CAEP](walkthroughs/experiments/08-caep/) — Security Event Tokens, real-time revocation | Enforcement |
+| 9 | [Workload Identity](walkthroughs/experiments/09-workload-identity/) — Platform-attested tokens, token exchange | Cross-cutting |
+
+## Design Tradeoffs
+
+CLI simulation vs full stack realism. These walkthroughs simulate protocol flows without a browser, network, or external services. The cost: doesn't exercise real HTTP flows or browser behavior. The benefit: isolates the protocol decisions from infrastructure noise — you can focus on *why* each check exists, not how to configure nginx.
 
 ## Quick Start
 
