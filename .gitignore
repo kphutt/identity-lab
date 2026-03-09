@@ -1,10 +1,22 @@
 node_modules/
-.claude/context.md
 **/notes/*
+
+# Environment & secrets
 .env
+*.pem
+*.key
+
+# Logs
 *.log
+
+# OS files
 .DS_Store
 Thumbs.db
+
+# Editor
 *.swp
 .vscode/
 .idea/
+
+# Claude Code
+.claude/
