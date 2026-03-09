@@ -8,7 +8,7 @@
     "start": "node run.js"
   },
   "dependencies": {
-    "cbor-x": "^1.6.0",
-    "jose": "^5.0.0"
+    "cbor-x": "1.6.0",
+    "jose": "5.10.0"
   }
 }

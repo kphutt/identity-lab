@@ -1,13 +1,5 @@
+# Node
 node_modules/
-**/notes/*
-
-# Environment & secrets
-.env
-*.pem
-*.key
-
-# Logs
-*.log
 
 # OS files
 .DS_Store
@@ -20,3 +12,14 @@ Thumbs.db
 
 # Claude Code
 .claude/
+
+# Logs
+*.log
+
+# Environment & secrets
+.env
+*.pem
+*.key
+
+# Project-specific
+**/notes/*
