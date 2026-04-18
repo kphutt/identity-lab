@@ -441,7 +441,7 @@ ${jwtLines.map(l => '  ' + l).join('\n')}
         // Build an expired token using CompactSign to bypass SignJWT exp guard
         const expiredPayload = { ...payload, exp: pastExp, iat: now - 7200 };
         const expiredHeader = { alg: 'ES256', typ: 'JWT', kid };
-        await new jose.CompactSign(
+        const expiredJwt = await new jose.CompactSign(
           new TextEncoder().encode(JSON.stringify(expiredPayload))
         )
           .setProtectedHeader(expiredHeader)
@@ -450,9 +450,21 @@ ${jwtLines.map(l => '  ' + l).join('\n')}
         console.log(`  Token exp: ${pastExp} (1 hour ago)`);
         console.log(`  Current:   ${now}`);
         console.log();
-        console.log(`  Signature ✓  Issuer ✓  Audience ✓  Expiry... ${now - pastExp} seconds past.`);
-        console.log();
-        console.log(`  Result: REJECTED ✅`);
+
+        try {
+          await jose.jwtVerify(expiredJwt, publicKey, {
+            issuer: 'https://idp.example.com',
+            audience: 'client-app-xyz',
+          });
+          console.log(`  Result: ACCEPTED (unexpected!)`);
+        } catch (e) {
+          console.log(`  Signature ✓  Issuer ✓  Audience ✓  Expiry... ${now - pastExp} seconds past.`);
+          console.log();
+          console.log(`  Result: REJECTED ✅`);
+          console.log();
+          console.log(`  Error: "${e.message}"`);
+        }
+
         console.log();
         console.log(`  Even with a valid signature and correct audience, expired tokens`);
         console.log(`  MUST be rejected. Short-lived tokens limit the blast radius of`);
