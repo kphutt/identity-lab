@@ -8,7 +8,7 @@ A collection of hands-on projects for learning the modern identity protocol stac
 |---------|-------------|--------|
 | `walkthroughs/` | Interactive CLI protocol simulations | Complete |
 
-More projects are planned — real implementation examples (working WebAuthn RP, OAuth2 authorization server, etc.) will sit as peer directories.
+The repo accommodates peer directories — additional projects (e.g., a working WebAuthn RP or OAuth2 authorization server) could sit alongside `walkthroughs/` if added later.
 
 ## The 5-Layer Stack Model
 
