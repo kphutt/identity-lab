@@ -41,9 +41,7 @@ When "start experiment N" is invoked, read `walkthroughs/DESIGN.md` for the comp
 
 ```
 identity-lab/
-├── CLAUDE.md                              ← You are here
-├── .claude/
-│   └── context.md                         ← Personal learning context (gitignored)
+├── AGENTS.md                              ← You are here
 ├── README.md                              ← Public-facing repo overview
 ├── LICENSE                                ← MIT
 ├── .nvmrc                                 ← Node 18
