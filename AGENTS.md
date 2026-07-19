@@ -1,5 +1,7 @@
 # identity-lab
 
+> Cross-repo conventions (fleet-wide) live in `~/dev/AGENTS.md` — the sole authority for anything fleet-wide. This file holds only identity-lab-specific guidance.
+
 A collection of hands-on projects for learning the modern identity protocol stack.
 
 ## Projects
