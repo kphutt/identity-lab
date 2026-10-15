@@ -1,0 +1,21 @@
+# Dependabot runs on GitHub's side (it watches the package registry) and is not
+# workflow-triggered, so it uses no Actions minutes. This repo has no .github/workflows,
+# so there is no "github-actions" entry; add one with the first workflow.
+version: 2
+updates:
+  # One package.json + package-lock.json per walkthrough experiment. Grouped by dependency
+  # name across the folders, so a jose bump lands as one PR instead of one per experiment.
+  - package-ecosystem: "npm"
+    directories:
+      - "/walkthroughs/experiments/*"
+    schedule:
+      interval: "weekly"
+    groups:
+      npm:
+        patterns: ["*"]
+        group-by: dependency-name
+    # Every release-age delay is 7 days: Dependabot won't propose a release until it has been
+    # public for 7 days, so a compromised or yanked release is usually caught upstream first.
+    # Security updates skip the cooldown.
+    cooldown:
+      default-days: 7
