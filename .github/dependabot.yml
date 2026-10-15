@@ -1,6 +1,6 @@
-# Dependabot runs on GitHub's side (it watches the package registry) and is not
-# workflow-triggered, so it uses no Actions minutes. This repo has no .github/workflows,
-# so there is no "github-actions" entry; add one with the first workflow.
+# Dependabot runs on GitHub's side on its own schedule (a GitHub-managed job, not a workflow
+# in this repo) and does not use this repo's Actions minutes. This repo has no
+# .github/workflows, so there is no "github-actions" entry; add one with the first workflow.
 version: 2
 updates:
   # One package.json + package-lock.json per walkthrough experiment. Grouped by dependency
@@ -17,5 +17,13 @@ updates:
     # Every release-age delay is 7 days: Dependabot won't propose a release until it has been
     # public for 7 days, so a compromised or yanked release is usually caught upstream first.
     # Security updates skip the cooldown.
+    cooldown:
+      default-days: 7
+
+  # .pre-commit-config.yaml pins its hooks (gitleaks) to a release; this keeps that pin current.
+  - package-ecosystem: "pre-commit"
+    directory: "/"
+    schedule:
+      interval: "weekly"
     cooldown:
       default-days: 7
