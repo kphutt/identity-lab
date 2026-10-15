@@ -9,6 +9,6 @@
   },
   "dependencies": {
     "cbor-x": "1.6.0",
-    "jose": "5.10.0"
+    "jose": "6.2.12"
   }
 }
